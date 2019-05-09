@@ -18,19 +18,21 @@ class Container
     static unsigned int nextId;
 
   private:  // Métodos y funciones propios
+    void checkWeight(unsigned int weight);
+    void checkValue(unsigned int value);
 
   public:
     static const unsigned int kMINWEIGHT = 100;
     static const unsigned int kMINVALUE = 100;
     Container(unsigned int weight = 0, unsigned int value = 0);
-    static void resetId();
-    const unsigned int getId();
-    const unsigned int getWeight();
-    const unsigned int getValue();
+    static void resetId() { nextId = 1; }
+    const unsigned int getId() { return id; }
+    const unsigned int getWeight() { return weight; }
+    const unsigned int getValue() { return value; }
     void setWeight(unsigned int weight);
     void setValue(unsigned int value);
 };
 
-unsigned int Container::nextId = 1;
+//unsigned int Container::nextId = 1;
 
 #endif
