@@ -70,6 +70,7 @@ void Container::checkValue(unsigned int value)
   }
 }
 
+// Operador de salida
 ostream& operator<<(ostream &os, const Container &c)
 {
   os << "[" << c.id << " "
