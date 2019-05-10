@@ -19,8 +19,10 @@ class Ship
     vector<Container> containers;
 
   private:  // Métodos y funciones propios
-    void checkMaxContainers(unsigned int maxCont);
-    void checkMaxWeight(unsigned int maxWeight);
+    void checkMaxContainers(unsigned int maxCont) const;
+    void checkMaxWeight(unsigned int maxWeight) const;
+    bool containerFits_nConts() const;
+    bool containerFits_weight(const Container &c) const;
 
   public:
     static const unsigned int kMINCONTAINERS = 5;

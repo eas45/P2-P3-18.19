@@ -33,6 +33,4 @@ class Container
     void setValue(unsigned int value);
 };
 
-//unsigned int Container::nextId = 1;
-
 #endif
