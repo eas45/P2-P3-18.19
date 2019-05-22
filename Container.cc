@@ -15,12 +15,14 @@ Container::Container(unsigned int weight, unsigned int value)
   {
     cout << "Container weight: ";
     cin >> aux_weight;
+    cin.get();
     checkWeight(aux_weight);
   }
   if (value == 0)
   {
     cout << "Container value: ";
     cin >> aux_value;
+    cin.get();
     checkValue(aux_value);
   }
   checkWeight(aux_weight);
@@ -28,6 +30,8 @@ Container::Container(unsigned int weight, unsigned int value)
   // Se construye el objeto
   this->weight = aux_weight;
   this->value = aux_value;
+  id = Container::nextId;
+  Container::nextId++;
 }
 
 // ##### SETTERs ######

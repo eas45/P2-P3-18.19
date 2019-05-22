@@ -13,12 +13,14 @@ Ship::Ship()
   unsigned int maxWeight = 0;
 
   cout << "Ship name: ";
-  cin >> name;
+  getline(cin, name);
   cout << "Ship max. containers: ";
   cin >> maxCont;
+  cin.get();
   checkMaxContainers(maxCont);
   cout << "Ship max. weight: ";
   cin >> maxWeight;
+  cin.get();
   checkMaxWeight(maxWeight);
   // Se construye el objeto
   this->name = name;
@@ -80,7 +82,7 @@ bool Ship::admitsContainer(const Container &c) const
 }
 
 /* Devuelve el contenedor buscado por su ID
-  * Throw::
+  * Throws::
     - ERR_CONTAINER_ID
 */
 Container Ship::getContainer(unsigned int id) const
@@ -167,7 +169,7 @@ vector<Container> Ship::releaseContainers()
 // # Métodos y funciones propias #
 
 /* Comprueba si el número máximo de contenedores está dentro del mínimo permitido.
-  * Throw::
+  * Throws::
     - ERR_SHIP_MAXCONTAINERS
 */
 void Ship::checkMaxContainers(unsigned int maxCont) const
@@ -179,7 +181,7 @@ void Ship::checkMaxContainers(unsigned int maxCont) const
 }
 
 /* Comprueba si el número máximo de peso está dentro del mínimo permitido.
-  * Throw::
+  * Throws::
     - ERR_SHIP_MAXWEIGHT
 */
 void Ship::checkMaxWeight(unsigned int maxWeight) const
