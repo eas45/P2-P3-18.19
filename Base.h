@@ -4,6 +4,7 @@
 #define _BASE_
 
 #include "Ship.h"
+#include <limits>
 
 class Base
 {
@@ -15,7 +16,8 @@ class Base
   vector<Container> containers;
 
   private:  // Métodos y funciones propios
-  int selectCont() const;
+  unsigned int selectCont() const;
+  int selectShip(unsigned int cont_p) const;
 
   public:
   Base(string name);

@@ -280,33 +280,90 @@ bool Base::unassignContainer(unsigned int id, string name)
   return unassigned;
 }
 
-/* Selecciona un contenedor que cumpla las condiciones de selección del algoritmo
-  * Return::int
-    - (Posición) -> Posición del contenedor en Base
-*/
-int selectCont() const
-{
-  int pos = 0;
-  unsigned int maxValue = containers[pos].getValue();
-  unsigned int minWeight = containers[pos].getWeight();
-
-  if (cont)
-
-  return pos;
-}
-
 /* Distribuye automáticamente los contenedores de Base en nave
   * Return::void
 */
 void Base::automaticDistribution()
 {
   bool end = false;
-  int cont_p = 0;
+  unsigned int cont_p = 0;
+  int ship_p = 0;
 
   while (!containers.empty() && !ships.empty() && !end)
   {
     // 1) Se elige CONTENEDOR de máximo valor y mínimo peso
     cont_p = selectCont();
     // 2) Se elige NAVE de menor valor acumulado
+    ship_p = selectShip(cont_p);
   }
+}
+
+// # Métodos y funciones propias #
+
+/* Selecciona un contenedor que cumpla las condiciones de selección del algoritmo
+  * Return::int
+    - (Posición) -> Posición del contenedor en Base
+*/
+unsigned int Base::selectCont() const
+{
+  unsigned int pos = 0;
+  unsigned int max_value = containers[pos].getValue();
+  unsigned int min_weight = containers[pos].getWeight();
+
+  if (containers.size() > 1)
+  {
+    for (unsigned int i = 0; i < containers.size(); i++)
+    {
+      if (containers[i].getValue() > max_value)
+      {
+        pos = i;
+        max_value = containers[i].getValue();
+        min_weight = containers[i].getWeight();
+      }
+      else if (containers[i].getValue() == max_value
+              && containers[i].getWeight() < min_weight)
+      {
+        pos = i;
+        min_weight = containers[i].getWeight();
+      }
+    }
+  }
+
+  return pos;
+}
+
+/* Selecciona una nave que cumpla las condiciones de selección del algoritmo
+  * Return::int
+    - (Posición) -> Posición de la nave en Base
+    - (-1) -> Las naves están al máximo
+    - (-2) -> Hay al menos una nave en la que caben contenedores, con lo que se puede dividir
+*/
+int Base::selectShip(unsigned int cont_p) const
+{
+  Container aux_cont = containers[cont_p];
+  int ship_p = -1;
+  unsigned int min_value = numeric_limits<unsigned int>::max();
+
+  for (unsigned int i = 0; i < ships.size(); i++)
+  {
+    if (ships[i]->admitsContainer(aux_cont) && ships[i]->getValue() < min_value)
+    {
+      ship_p = i;
+      min_value = ships[i]->getValue();
+    }
+  }
+  // Comprueba si hay naves con espacio para contenedores
+  if (ship_p == -1)
+  {
+    for (unsigned int i = 0; i < ships.size() && ship_p == -1; i++)
+    {
+      if (ships[i]->containerFits_nConts() &&
+          ships[i]->getMaxWeight() - ships[i]->getWeight() >= MIN_WEIGHT_CONTAINER)
+      {
+        ship_p = -2;
+      }
+    }
+  }
+
+  return pos;
 }
