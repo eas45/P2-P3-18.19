@@ -15,7 +15,7 @@ class Base
   vector<Container> containers;
 
   private:  // Métodos y funciones propios
-  
+  int selectCont() const;
 
   public:
   Base(string name);

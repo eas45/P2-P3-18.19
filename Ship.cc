@@ -115,6 +115,9 @@ bool Ship::addContainer(const Container &c)
     {
       containers.push_back(c);
       added = true;
+      // Actualiza los datos de la nave
+      weight += c.getWeight();
+      value += c.getValue();
     }
     else
     {
@@ -138,17 +141,21 @@ bool Ship::addContainer(const Container &c)
 */
 bool Ship::removeContainer(unsigned int id)
 {
-  bool removed = false;
+  bool removed = true;
   int pos = searchContainer(id);
 
-  if (pos > -1)
+  if (pos == -1)
   {
-    containers.erase(containers.begin() + pos);
-    removed = true;
+    removed = false;
+    Util::error(ERR_CONTAINER_ID);
   }
   else
   {
-    Util::error(ERR_CONTAINER_ID);
+    // Actualiza los datos de la nave
+    weight -= containers[pos].getWeight();
+    value -= containers[pos].getValue();
+    // Elimina
+    containers.erase(containers.begin() + pos);
   }
 
   return removed;
@@ -162,6 +169,8 @@ vector<Container> Ship::releaseContainers()
   vector<Container> conts(containers);
 
   containers.clear();
+  weight = 0;
+  value = 0;
 
   return conts;
 }
