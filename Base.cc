@@ -116,9 +116,16 @@ bool Base::addContainer(unsigned int weight, unsigned int value)
 */
 bool Base::removeContainer(unsigned int id)
 {
-  int pos = searchContainer(id);
+  int pos = 0;
   bool removed = true;
 
+  if (id == 0)
+  {
+    cout << "Container id: ";
+    cin >> id;
+    cin.get();
+  }
+  pos = searchContainer(id);
   if (pos == -1)
   {
     removed = false;
@@ -218,25 +225,27 @@ bool Base::manualDistribution(unsigned int id, string name)
     cin.get();
   }
   cont_p = searchContainer(id);
-  if (name == "")
-  {
-    cout << "Ship name: " << endl;
-    getline(cin, name);
-  }
-  ship_p = searchShip(name);
-  // Comprueba que exista
   if (cont_p == -1)
   {
     Util::error(ERR_CONTAINER_ID);
   }
-  else if (ship_p == -1)
+  else
   {
-    Util::error(ERR_SHIP_NAME);
-  }
-  else if (ships[ship_p]->addContainer(containers[cont_p]))
-  {  // Se borra el contenedor de base porque ahora está en una nave
-    containers.erase(containers.begin() + cont_p);
-    distributed = true;
+    if (name == "")
+    {
+      cout << "Ship name: " << endl;
+      getline(cin, name);
+    }
+    ship_p = searchShip(name);
+    if (ship_p == -1)
+    {
+      Util::error(ERR_SHIP_NAME);
+    }
+    else if (ships[ship_p]->addContainer(containers[cont_p]))
+    {  // Se borra el contenedor de base porque ahora está en una nave
+      containers.erase(containers.begin() + cont_p);
+      distributed = true;
+    }
   }
 
   return distributed;
@@ -248,7 +257,7 @@ bool Base::manualDistribution(unsigned int id, string name)
     - False -> No lo ha desasignado
   * Error::
     - ERR_SHIP_NAME
-    - ERR_CONTAINER_ID (removeContainer)
+    - ERR_CONTAINER_ID
 */
 bool Base::unassignContainer(unsigned int id, string name)
 {
@@ -273,6 +282,11 @@ bool Base::unassignContainer(unsigned int id, string name)
       cin >> id;
       cin.get();
     }
+    if (ships[ship_p]->searchContainer(id) == -1)
+    {
+      Util::error(ERR_CONTAINER_ID);
+    }
+    containers.push_back(ships[ship_p]->getContainer(id));
     ships[ship_p]->removeContainer(id);
     unassigned = true;
   }
@@ -282,6 +296,9 @@ bool Base::unassignContainer(unsigned int id, string name)
 
 /* Distribuye automáticamente los contenedores de Base en nave
   * Return::void
+  * Error::
+    - ERR_SHIP_NO_MORE_CONTAINERS (addContainer)
+    - ERR_SHIP_NO_MORE_WEIGHT (addContainer)
 */
 void Base::automaticDistribution()
 {
@@ -295,10 +312,40 @@ void Base::automaticDistribution()
     cont_p = selectCont();
     // 2) Se elige NAVE de menor valor acumulado
     ship_p = selectShip(cont_p);
+    if (ship_p >= 0)
+    {  // Se ha encontrado una nave para el contenedor
+      ships[ship_p]->addContainer(containers[cont_p]);
+      // Se borra el contenedor que ahora está en nave
+      containers.erase(containers.begin() + cont_p);
+    }
+    else if (ship_p == -1)
+    {  // Las naves están al máximo
+      end = true;
+    }
+    else
+    {  // Hay naves con espacio para contenedores pero no de ese peso
+      end = !divideContainer(cont_p);
+    }
   }
 }
 
-// # Métodos y funciones propias #
+/* Desasigna todos los contenedores que estén en alguna nave y los devuelve a Base
+  * Return::void
+*/
+void Base::clearAssignations()
+{
+  vector<Container> aux;
+  for (unsigned int i = 0; i < ships.size(); i++)
+  {
+    aux = ships[i]->releaseContainers();
+    for (unsigned int j = 0; j < aux.size(); j++)
+    {
+      containers.push_back(aux[j]);
+    }
+  }
+}
+
+// ###### Métodos y funciones propios ######
 
 /* Selecciona un contenedor que cumpla las condiciones de selección del algoritmo
   * Return::int
@@ -357,13 +404,70 @@ int Base::selectShip(unsigned int cont_p) const
   {
     for (unsigned int i = 0; i < ships.size() && ship_p == -1; i++)
     {
-      if (ships[i]->containerFits_nConts() &&
-          ships[i]->getMaxWeight() - ships[i]->getWeight() >= MIN_WEIGHT_CONTAINER)
+      if (ships[i]->getNumContainers() < ships[i]->getMaxContainers() &&
+          ships[i]->getMaxWeight() - ships[i]->getWeight() >= Container::kMINWEIGHT)
       {
         ship_p = -2;
       }
     }
   }
 
-  return pos;
+  return ship_p;
+}
+
+/* Divide el contenedor en dos e inserta estas en partes en Base
+  * Return::bool
+    - True -> El contenedor se puede dividir
+    - False -> El contenedor no se puede dividir
+*/
+bool Base::divideContainer(unsigned int cont_p)
+{
+  bool divided = false;
+  unsigned int aux_value = containers[cont_p].getValue() / 2;
+  unsigned int aux_weight = containers[cont_p].getWeight() / 2;
+  unsigned int odd_value = containers[cont_p].getValue() % 2;
+  unsigned int odd_weight = containers[cont_p].getWeight() % 2;
+
+  if (aux_value >= Container::kMINVALUE &&
+      aux_weight >= Container::kMINWEIGHT)
+  {
+    divided = true;
+    // Se crean los nuevos contenedores
+    try
+    {
+      Container aux1 = Container(aux_weight, aux_value);
+      Container aux2 = Container(aux_weight + odd_weight, aux_value + odd_value);
+      // Se borra el contenedor de Base
+      containers.erase(containers.begin() + cont_p);
+      // Se añaden los nuevos contenedores
+      containers.push_back(aux1);
+      containers.push_back(aux2);
+    }
+    catch (Error e)
+    {
+      Util::error(e);
+    }
+  }
+
+  return divided;
+}
+
+// Operador de salida
+ostream& operator<<(ostream &os, const Base &b)
+{
+  os << "Name: " << b.name << endl
+    << "Containers:" << endl;
+  // Muestra los contenedores de Base
+  for (unsigned int i = 0; i < b.containers.size(); i++)
+  {
+    os << b.containers[i] << endl;
+  }
+  os << "Ships:" << endl;
+  // Muestra las naves de Base
+  for (unsigned int i = 0; i < b.ships.size(); i++)
+  {
+    os << *(b.ships[i]);
+  }
+
+  return os;
 }

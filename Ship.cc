@@ -5,6 +5,9 @@
 // CONSTRUCTORES
 
 /* Por defecto
+  * Throws::
+    - ERR_SHIP_MAXCONTAINERS (checkMaxContainers)
+    - ERR_SHIP_MAXWEIGHT (checkMaxWeight)
 */
 Ship::Ship()
 {
@@ -175,7 +178,7 @@ vector<Container> Ship::releaseContainers()
   return conts;
 }
 
-// # Métodos y funciones propias #
+// ###### Métodos y funciones propios ######
 
 /* Comprueba si el número máximo de contenedores está dentro del mínimo permitido.
   * Throws::
@@ -245,15 +248,11 @@ ostream& operator<<(ostream &os, const Ship &s)
      << "(" << s.maxContainers << "),"
      << " " << s.value << endl;
   // Muestra todos los contenedores de la nave
-  for (unsigned i = 0; i < s.containers.size(); i++)
+  for (unsigned int i = 0; i < s.containers.size(); i++)
   {
     os << s.containers[i];
   }
-  if (!s.containers.empty())
-  {
-    os << endl;
-  }
-  os << "}" << endl;
+  os << endl << "}" << endl;
 
   return os;
 }

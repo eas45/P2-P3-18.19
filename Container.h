@@ -25,7 +25,7 @@ class Container
     static const unsigned int kMINWEIGHT = 100;
     static const unsigned int kMINVALUE = 100;
     Container(unsigned int weight = 0, unsigned int value = 0);
-    static void resetId() { nextId = 1; }
+    static void resetNextId() { Container::nextId = 1; }
     unsigned int getId() const { return id; }
     unsigned int getWeight() const { return weight; }
     unsigned int getValue() const { return value; }

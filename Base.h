@@ -18,6 +18,7 @@ class Base
   private:  // Métodos y funciones propios
   unsigned int selectCont() const;
   int selectShip(unsigned int cont_p) const;
+  bool divideContainer(unsigned int cont_p);
 
   public:
   Base(string name);

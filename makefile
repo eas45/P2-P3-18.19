@@ -5,7 +5,7 @@ CC=g++
 prac3: $(OBJS)
 	$(CC) $(OPTS) $(OBJS) -o prac3
 
-prac3.o: prac3.cc Base.h Ship.h Container.h Util.
+prac3.o: prac3.cc Base.h Ship.h Container.h Util.h
 	$(CC) $(OPTS) -c prac3.cc
 
 Base.o: Base.cc Base.h Container.h Ship.h Util.h

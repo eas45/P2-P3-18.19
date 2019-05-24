@@ -8,28 +8,25 @@ unsigned int Container::nextId = 1;
 */
 Container::Container(unsigned int weight, unsigned int value)
 {
-  unsigned int aux_weight = weight;
-  unsigned int aux_value = value;
-
   if (weight == 0)
   {
     cout << "Container weight: ";
-    cin >> aux_weight;
+    cin >> weight;
     cin.get();
-    checkWeight(aux_weight);
+    checkWeight(weight);
   }
   if (value == 0)
   {
     cout << "Container value: ";
-    cin >> aux_value;
+    cin >> value;
     cin.get();
-    checkValue(aux_value);
+    checkValue(value);
   }
-  checkWeight(aux_weight);
-  checkValue(aux_value);
+  checkWeight(weight);
+  checkValue(value);
   // Se construye el objeto
-  this->weight = aux_weight;
-  this->value = aux_value;
+  this->weight = weight;
+  this->value = value;
   id = Container::nextId;
   Container::nextId++;
 }
