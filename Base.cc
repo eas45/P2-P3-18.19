@@ -435,13 +435,10 @@ bool Base::divideContainer(unsigned int cont_p)
     // Se crean los nuevos contenedores
     try
     {
-      Container aux1 = Container(aux_weight, aux_value);
-      Container aux2 = Container(aux_weight + odd_weight, aux_value + odd_value);
+      addContainer(aux_weight, aux_value);
+      addContainer(aux_weight + odd_weight, aux_value + odd_value);
       // Se borra el contenedor de Base
       containers.erase(containers.begin() + cont_p);
-      // Se añaden los nuevos contenedores
-      containers.push_back(aux1);
-      containers.push_back(aux2);
     }
     catch (Error e)
     {
